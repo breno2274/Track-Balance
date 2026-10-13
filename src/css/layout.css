@@ -29,10 +29,9 @@
 }
 
 .brand-logo-img {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 .brand-headings {
