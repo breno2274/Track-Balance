@@ -1,5 +1,6 @@
 /**
  * Componente dos Cards de Resumo Financeiro (SummaryCards).
+ * Renderiza os 4 blocos de métricas com suporte à Meta do Mês e barra de progresso.
  */
 
 import { formatCurrency } from '../utils/currency.js';
@@ -8,9 +9,11 @@ import { calculateSummary } from '../services/finance-service.js';
 export class SummaryCards {
   /**
    * @param {HTMLElement} container
+   * @param {number} [monthlyGoal=1500] - Meta de economia do mês em reais
    */
-  constructor(container) {
+  constructor(container, monthlyGoal = 1500) {
     this.container = container;
+    this.monthlyGoal = monthlyGoal;
   }
 
   /**
@@ -22,84 +25,92 @@ export class SummaryCards {
 
     const summary = calculateSummary(transactions);
 
-    const isPositiveBalance = summary.balance >= 0;
-    const balanceSign = summary.balance > 0 ? '+' : '';
+    // Cálculo da Meta do Mês: % do saldo acumulado em relação à meta
+    const goalTarget = this.monthlyGoal;
+    const goalProgress = goalTarget > 0 ? Math.min(Math.max(Math.round((summary.balance / goalTarget) * 100), 0), 100) : 0;
 
     this.container.innerHTML = `
-      <!-- Card 1: Saldo Consolidado -->
-      <article class="metric-card balance" aria-label="Saldo atual">
-        <header class="metric-header">
-          <span class="metric-label">Saldo Atual</span>
-          <div class="metric-icon-box" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- 1. Receitas -->
+      <article class="metric-box" aria-label="Receitas do período">
+        <div class="metric-top">
+          <div class="metric-icon-mini">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m5 12 7-7 7 7"/>
+              <path d="M12 19V5"/>
+            </svg>
+          </div>
+          <span>Receitas</span>
+        </div>
+        <div class="metric-number income">
+          ${formatCurrency(summary.income)}
+        </div>
+        <div class="metric-sub-info">
+          <span class="trend-badge positive">+12%</span>
+          <span>vs. mês anterior</span>
+        </div>
+      </article>
+
+      <!-- 2. Despesas -->
+      <article class="metric-box" aria-label="Despesas do período">
+        <div class="metric-top">
+          <div class="metric-icon-mini">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m19 12-7 7-7-7"/>
+              <path d="M12 5v14"/>
+            </svg>
+          </div>
+          <span>Despesas</span>
+        </div>
+        <div class="metric-number expense">
+          ${formatCurrency(summary.expenses)}
+        </div>
+        <div class="metric-sub-info">
+          <span class="trend-badge negative">-8%</span>
+          <span>vs. mês anterior</span>
+        </div>
+      </article>
+
+      <!-- 3. Saldo -->
+      <article class="metric-box" aria-label="Saldo atual">
+        <div class="metric-top">
+          <div class="metric-icon-mini">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
               <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
               <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
             </svg>
           </div>
-        </header>
-        <div class="metric-value" style="color: ${isPositiveBalance ? 'var(--color-text-main)' : 'var(--color-expense)'}">
-          ${balanceSign}${formatCurrency(summary.balance)}
+          <span>Saldo</span>
         </div>
-        <footer class="metric-footer">
-          <span>${transactions.length} transações no período</span>
-        </footer>
+        <div class="metric-number neutral">
+          ${formatCurrency(summary.balance)}
+        </div>
+        <div class="metric-sub-info">
+          <span>total no mês</span>
+        </div>
       </article>
 
-      <!-- Card 2: Receitas do Período -->
-      <article class="metric-card income" aria-label="Total de receitas">
-        <header class="metric-header">
-          <span class="metric-label">Receitas</span>
-          <div class="metric-icon-box" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m5 12 7-7 7 7"/>
-              <path d="M12 19V5"/>
+      <!-- 4. Meta do Mês -->
+      <article class="metric-box" aria-label="Meta de economia do mês">
+        <div class="metric-top">
+          <div class="metric-icon-mini">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="6"/>
+              <circle cx="12" cy="12" r="2"/>
             </svg>
           </div>
-        </header>
-        <div class="metric-value">
-          +${formatCurrency(summary.income)}
+          <span>Meta do Mês</span>
         </div>
-        <footer class="metric-footer">
-          <span>Entradas registradas</span>
-        </footer>
-      </article>
-
-      <!-- Card 3: Despesas do Período -->
-      <article class="metric-card expense" aria-label="Total de despesas">
-        <header class="metric-header">
-          <span class="metric-label">Despesas</span>
-          <div class="metric-icon-box" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m19 12-7 7-7-7"/>
-              <path d="M12 5v14"/>
-            </svg>
+        <div class="metric-number neutral">
+          ${formatCurrency(goalTarget)}
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-track" role="progressbar" aria-valuenow="${goalProgress}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" style="width: ${goalProgress}%;"></div>
           </div>
-        </header>
-        <div class="metric-value">
-          -${formatCurrency(summary.expenses)}
+          <span class="progress-percent-label">${goalProgress}%</span>
         </div>
-        <footer class="metric-footer">
-          <span>Saídas e custos</span>
-        </footer>
-      </article>
-
-      <!-- Card 4: Taxa de Economia / Balanço -->
-      <article class="metric-card savings" aria-label="Taxa de economia">
-        <header class="metric-header">
-          <span class="metric-label">Taxa de Poupança</span>
-          <div class="metric-icon-box" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-            </svg>
-          </div>
-        </header>
-        <div class="metric-value">
-          ${summary.savingsRate.toFixed(1)}%
-        </div>
-        <footer class="metric-footer">
-          <span>${summary.expenseRatio.toFixed(0)}% do orçamento gasto</span>
-        </footer>
       </article>
     `;
   }

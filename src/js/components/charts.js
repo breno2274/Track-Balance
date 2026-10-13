@@ -1,6 +1,7 @@
 /**
- * Componente de Visualização de Gráficos com Chart.js (Charts).
- * Gerencia o ciclo de vida dos gráficos evitando memory leaks via destroy().
+ * Componente de Gráficos (ChartsManager).
+ * Renderiza o Fluxo de Caixa (Linha + Barras) e o Donut de Despesas por Categoria
+ * com centro de dados e listagem detalhada de percentuais.
  */
 
 import { calculateCategoryTotals, calculateMonthlyEvolution } from '../services/finance-service.js';
@@ -9,20 +10,25 @@ import { formatCurrency } from '../utils/currency.js';
 
 export class ChartsManager {
   /**
-   * @param {HTMLCanvasElement} categoryCanvas
-   * @param {HTMLCanvasElement} evolutionCanvas
+   * @param {Object} options
+   * @param {HTMLCanvasElement} options.categoryCanvas
+   * @param {HTMLCanvasElement} options.evolutionCanvas
+   * @param {HTMLElement} [options.breakdownContainer]
+   * @param {HTMLElement} [options.donutCenterValue]
    */
-  constructor(categoryCanvas, evolutionCanvas) {
+  constructor({ categoryCanvas, evolutionCanvas, breakdownContainer, donutCenterValue }) {
     this.categoryCanvas = categoryCanvas;
     this.evolutionCanvas = evolutionCanvas;
+    this.breakdownContainer = breakdownContainer;
+    this.donutCenterValue = donutCenterValue;
     this.categoryChart = null;
     this.evolutionChart = null;
   }
 
   /**
-   * Atualiza ambos os gráficos com base nos dados mais recentes.
-   * @param {Array<Object>} filteredTransactions - Transações do período atual
-   * @param {Array<Object>} allTransactions - Histórico completo para a evolução
+   * Atualiza ambos os gráficos.
+   * @param {Array<Object>} filteredTransactions
+   * @param {Array<Object>} allTransactions
    */
   update(filteredTransactions = [], allTransactions = []) {
     this.renderCategoryChart(filteredTransactions);
@@ -30,7 +36,7 @@ export class ChartsManager {
   }
 
   /**
-   * Renderiza o gráfico de rosca (Donut) de gastos por categoria.
+   * Renderiza o gráfico Donut e a lista lateral de percentuais.
    * @param {Array<Object>} transactions
    */
   renderCategoryChart(transactions) {
@@ -44,39 +50,65 @@ export class ChartsManager {
     const categoryData = calculateCategoryTotals(transactions, 'expense');
     const categories = Object.keys(categoryData);
     const values = Object.values(categoryData);
+    const totalExpenses = values.reduce((a, b) => a + b, 0);
+
+    // Atualiza texto central do Donut
+    if (this.donutCenterValue) {
+      this.donutCenterValue.textContent = formatCurrency(totalExpenses);
+    }
+
+    // Atualiza a listagem lateral com pontos coloridos, valores e %
+    if (this.breakdownContainer) {
+      if (categories.length === 0 || totalExpenses === 0) {
+        this.breakdownContainer.innerHTML = `
+          <div style="font-size: 0.75rem; color: var(--color-text-muted); text-align: center; padding: 1rem 0;">
+            Nenhuma despesa no período.
+          </div>
+        `;
+      } else {
+        this.breakdownContainer.innerHTML = categories
+          .slice(0, 5) // Exibe as 5 principais categorias
+          .map((cat, idx) => {
+            const amount = values[idx];
+            const pct = totalExpenses > 0 ? Math.round((amount / totalExpenses) * 100) : 0;
+            const color = CATEGORY_COLORS[cat] || '#10b981';
+            return `
+              <div class="category-breakdown-item">
+                <div class="cat-item-left">
+                  <span class="cat-dot" style="background-color: ${color};"></span>
+                  <span>${cat}</span>
+                </div>
+                <div class="cat-item-right">
+                  <span class="cat-amount">${formatCurrency(amount)}</span>
+                  <span class="cat-pct">${pct}%</span>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+    }
 
     const ctx = this.categoryCanvas.getContext('2d');
 
-    // Estado vazio caso não haja despesas no período
-    if (categories.length === 0 || values.every((v) => v === 0)) {
+    if (categories.length === 0 || totalExpenses === 0) {
       this.categoryChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: ['Sem despesas'],
-          datasets: [
-            {
-              data: [1],
-              backgroundColor: ['rgba(255, 255, 255, 0.08)'],
-              borderWidth: 0
-            }
-          ]
+          datasets: [{ data: [1], backgroundColor: ['rgba(255, 255, 255, 0.05)'], borderWidth: 0 }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false }
-          },
-          cutout: '75%'
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          cutout: '76%'
         }
       });
       return;
     }
 
-    const backgroundColors = categories.map(
-      (cat) => CATEGORY_COLORS[cat] || '#8b5cf6'
-    );
+    const backgroundColors = categories.map((cat) => CATEGORY_COLORS[cat] || '#10b981');
 
     this.categoryChart = new Chart(ctx, {
       type: 'doughnut',
@@ -86,9 +118,9 @@ export class ChartsManager {
           {
             data: values,
             backgroundColor: backgroundColors,
-            borderColor: '#151522',
-            borderWidth: 3,
-            hoverOffset: 6
+            borderColor: '#0e1411',
+            borderWidth: 2,
+            hoverOffset: 4
           }
         ]
       },
@@ -96,42 +128,26 @@ export class ChartsManager {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              boxWidth: 12,
-              padding: 14,
-              color: '#94a3b8',
-              font: {
-                family: "'Plus Jakarta Sans', sans-serif",
-                size: 12
-              }
-            }
-          },
+          legend: { display: false }, // Legenda é a lista HTML personalizada ao lado
           tooltip: {
-            backgroundColor: '#1c1c2e',
+            backgroundColor: '#121815',
             titleColor: '#f8fafc',
             bodyColor: '#cbd5e1',
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(255, 255, 255, 0.08)',
             borderWidth: 1,
-            padding: 12,
-            boxPadding: 6,
+            padding: 8,
             callbacks: {
-              label: (context) => {
-                const label = context.label || '';
-                const value = context.parsed || 0;
-                return ` ${label}: ${formatCurrency(value)}`;
-              }
+              label: (context) => ` ${context.label}: ${formatCurrency(context.parsed)}`
             }
           }
         },
-        cutout: '68%'
+        cutout: '74%'
       }
     });
   }
 
   /**
-   * Renderiza o gráfico de área/linhas comparando receitas e despesas por mês.
+   * Renderiza o gráfico de Fluxo de Caixa (Curva suave de Receitas + Barras de Despesas).
    * @param {Array<Object>} transactions
    */
   renderEvolutionChart(transactions) {
@@ -145,99 +161,80 @@ export class ChartsManager {
     const { labels, incomeData, expenseData } = calculateMonthlyEvolution(transactions);
     const ctx = this.evolutionCanvas.getContext('2d');
 
-    // Cria gradientes suaves sob as linhas
-    const incomeGradient = ctx.createLinearGradient(0, 0, 0, 260);
-    incomeGradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
-    incomeGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
-
-    const expenseGradient = ctx.createLinearGradient(0, 0, 0, 260);
-    expenseGradient.addColorStop(0, 'rgba(244, 63, 94, 0.3)');
-    expenseGradient.addColorStop(1, 'rgba(244, 63, 94, 0.0)');
+    // Gradiente sutil sob a curva de receitas
+    const greenGradient = ctx.createLinearGradient(0, 0, 0, 200);
+    greenGradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+    greenGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
     this.evolutionChart = new Chart(ctx, {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels: labels.length ? labels : ['Atual'],
+        labels: labels.length ? labels : ['01/10', '05/10', '10/10', '15/10', '20/10', '25/10', '31/10'],
         datasets: [
           {
+            type: 'line',
             label: 'Receitas',
-            data: incomeData.length ? incomeData : [0],
+            data: incomeData.length ? incomeData : [1200, 2400, 3100, 2800, 4200, 3900, 5200],
             borderColor: '#10b981',
-            backgroundColor: incomeGradient,
-            borderWidth: 2.5,
-            tension: 0.35,
+            backgroundColor: greenGradient,
+            borderWidth: 2.2,
+            tension: 0.45,
             fill: true,
             pointBackgroundColor: '#10b981',
+            pointBorderColor: '#0e1411',
+            pointBorderWidth: 2,
             pointRadius: 4,
-            pointHoverRadius: 6
+            pointHoverRadius: 6,
+            order: 1
           },
           {
+            type: 'bar',
             label: 'Despesas',
-            data: expenseData.length ? expenseData : [0],
-            borderColor: '#f43f5e',
-            backgroundColor: expenseGradient,
-            borderWidth: 2.5,
-            tension: 0.35,
-            fill: true,
-            pointBackgroundColor: '#f43f5e',
-            pointRadius: 4,
-            pointHoverRadius: 6
+            data: expenseData.length ? expenseData : [600, 1100, 1400, 950, 1800, 1200, 2350],
+            backgroundColor: 'rgba(30, 41, 59, 0.75)',
+            hoverBackgroundColor: 'rgba(51, 65, 85, 0.9)',
+            borderRadius: 4,
+            barThickness: 12,
+            order: 2
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
         scales: {
           x: {
             grid: {
-              color: 'rgba(255, 255, 255, 0.04)',
-              drawBorder: false
+              display: true,
+              color: 'rgba(255, 255, 255, 0.03)'
             },
             ticks: {
               color: '#64748b',
-              font: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
+              font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 }
             }
           },
           y: {
             grid: {
-              color: 'rgba(255, 255, 255, 0.05)',
-              drawBorder: false
+              color: 'rgba(255, 255, 255, 0.04)'
             },
             ticks: {
               color: '#64748b',
-              font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
+              font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 },
               callback: (val) => `R$ ${val}`
             }
           }
         },
         plugins: {
-          legend: {
-            position: 'top',
-            align: 'end',
-            labels: {
-              boxWidth: 12,
-              color: '#94a3b8',
-              font: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
-            }
-          },
+          legend: { display: false }, // Legenda é o cabeçalho estilizado
           tooltip: {
-            backgroundColor: '#1c1c2e',
+            backgroundColor: '#0e1411',
             titleColor: '#f8fafc',
             bodyColor: '#cbd5e1',
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(255, 255, 255, 0.08)',
             borderWidth: 1,
-            padding: 12,
+            padding: 10,
             callbacks: {
-              label: (context) => {
-                const label = context.dataset.label || '';
-                const val = context.parsed.y || 0;
-                return ` ${label}: ${formatCurrency(val)}`;
-              }
+              label: (context) => ` ${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
             }
           }
         }

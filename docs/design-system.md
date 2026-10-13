@@ -6,28 +6,29 @@ Este documento define os princípios visuais, paleta de cores, tipografia, token
 
 ## 1. Identidade Visual e Filosofia
 
-O visual do **Track Balance** é inspirado em interfaces financeiras modernas de alto padrão (SaaS FinTech). Ele utiliza uma estética **Dark Glassmorphism**:
-- Fundo escuro profundo para reduzir a fadiga visual.
-- Painéis elevados com transparência sutil e desfoque de fundo (`backdrop-filter: blur(12px)`).
-- Bordas translúcidas finas para delimitar os cartões sem poluição visual.
-- Cores de destaque vibrantes (violeta, esmeralda e rosa) para destacar os fluxos de dinheiro.
+O visual do **Track Balance** adota a estética **Dark Emerald FinTech** (inspirada em interfaces de alta produtividade como Linear, Raycast e bancos digitais modernos):
+- Fundo escuro profundo (`#060908`) reduzindo fadiga visual.
+- Painéis foscos com bordas ultra-sutis (`#0e1411` e `rgba(255, 255, 255, 0.05)`).
+- Acentos em **Verde Esmeralda Neon / Menta** (`#10b981`, `#34d399`) para simbolizar saúde financeira, crescimento e foco.
+- Layout profissional em 3 colunas (Menu lateral, Dashboard central e Formulário rápido embutido à direita).
 
 ---
 
 ## 2. Paleta de Cores (Design Tokens)
 
 ### 2.1. Cores de Superfície e Fundo
-- **Background Principal:** `#0c0c11` — Escuro profundo
-- **Surface Primária (Cards / Painéis):** `#14141e`
-- **Surface Secundária (Inputs / Elementos):** `#1c1c2a`
-- **Borda Padrão:** `rgba(255, 255, 255, 0.08)`
-- **Borda Ativa / Hover:** `rgba(139, 92, 246, 0.4)`
+- **Background Principal:** `#060908` — Escuro fosco profundo
+- **Surface Primária (Cards / Painéis):** `#0e1411`
+- **Surface Secundária (Inputs / Elementos):** `#121815`
+- **Borda Padrão:** `rgba(255, 255, 255, 0.05)`
+- **Borda Ativa / Foco:** `rgba(16, 185, 129, 0.45)`
 
 ### 2.2. Cores Semânticas
-- **Cor Primária (Marca / Ações):** `#8b5cf6` (Violeta)
-- **Primária Hover:** `#7c3aed`
-- **Sucesso / Receita (Income):** `#10b981` (Esmeralda)
-- **Perigo / Despesa (Expense):** `#f43f5e` (Rosa/Vermelho)
+- **Cor Primária (Marca / Ações):** `#10b981` (Verde Esmeralda)
+- **Primária Hover:** `#059669`
+- **Primária Light:** `#34d399`
+- **Receita (Income):** `#10b981`
+- **Despesa (Expense):** `#ef4444` (Vermelho carmesim)
 - **Alerta / Neutro:** `#f59e0b` (Âmbar)
 
 ### 2.3. Tipografia e Cores de Texto

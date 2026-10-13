@@ -1,134 +1,262 @@
-/* Layout & Dashboard Grids */
-.app-container {
+/* Layout Principal - 3 Colunas SaaS FinTech */
+
+.app-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-bg);
 }
 
-/* Header */
-.app-header {
+/* 1. Header Superior */
+.top-nav {
   position: sticky;
   top: 0;
-  z-index: 40;
-  background-color: rgba(9, 9, 13, 0.85);
+  z-index: 50;
+  background-color: rgba(6, 9, 8, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--glass-border);
-}
-
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-4) var(--space-6);
+  padding: 0.75rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand-logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+}
+
+.brand-headings {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-main-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-text-main);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.brand-tagline {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.top-nav-right {
+  display: flex;
+  align-items: center;
   gap: var(--space-4);
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.brand-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--color-primary), #6366f1);
+.theme-toggle-btn {
+  background: transparent;
+  color: var(--color-text-secondary);
+  padding: 6px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-glow-purple);
-  color: white;
+  transition: color var(--transition-fast);
 }
 
-.brand-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(to right, #ffffff, #cbd5e1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.theme-toggle-btn:hover {
+  color: var(--color-text-main);
 }
 
-.brand-badge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 2px 8px;
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 10px 4px 4px;
   border-radius: var(--radius-full);
-  background-color: var(--color-primary-muted);
-  color: var(--color-primary-light);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
 }
 
-.header-actions {
+.user-avatar-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.user-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.user-chevron {
+  color: var(--color-text-muted);
+}
+
+/* 2. Layout Central - 3 Colunas */
+.main-dashboard-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 340px;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  max-width: 1750px;
+  width: 100%;
+  margin: 0 auto;
+  flex: 1;
+}
+
+/* Coluna 1: Sidebar Esquerda */
+.sidebar-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-link {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  padding: 0.65rem 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
 }
 
-/* Main Content Area */
-.app-main {
-  flex: 1;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  padding: var(--space-6);
+.nav-link:hover {
+  color: var(--color-text-main);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.nav-link.active {
+  color: var(--color-primary-light);
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.02) 100%);
+  border-left: 3px solid var(--color-primary);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  padding: var(--space-4) var(--space-2);
+  border-top: 1px solid var(--glass-border);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Coluna 2: Conteúdo Central */
+.center-column {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-5);
+  min-width: 0; /* Previne overflow de canvas no grid */
 }
 
-/* Metrics Grid */
-.summary-grid {
+/* Banner de Boas-Vindas */
+.welcome-banner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: var(--space-1);
+}
+
+.welcome-subtitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary-light);
+  margin-bottom: 2px;
+}
+
+.welcome-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-main);
+  line-height: 1.15;
+}
+
+.welcome-desc {
+  font-size: 0.825rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.date-indicator {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.date-month {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.date-month span {
+  color: var(--color-primary-light);
+}
+
+.date-today {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.date-divider {
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.6) 0%, rgba(16, 185, 129, 0) 100%);
+  margin-top: 4px;
+}
+
+/* Grid de Métricas */
+.metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-4);
 }
 
-/* Charts Analytics Grid */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr;
-  gap: var(--space-6);
+/* Painel de Fluxo de Caixa */
+.cashflow-card {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Transactions Section */
-.transactions-section {
+/* Linha Inferior (Categorias e Recentes) */
+.bottom-analytics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* Coluna 3: Painel Lateral Direito */
+.sidebar-right {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-}
-
-/* Footer */
-.app-footer {
-  margin-top: auto;
-  border-top: 1px solid var(--glass-border);
-  background-color: var(--color-surface-base);
-  padding: var(--space-6) var(--space-4);
-}
-
-.footer-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-}
-
-.footer-links {
-  display: flex;
-  gap: var(--space-4);
-}
-
-.footer-links a:hover {
-  color: var(--color-primary-light);
-  text-decoration: underline;
+  gap: var(--space-5);
 }

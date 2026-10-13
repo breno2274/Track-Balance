@@ -1,93 +1,73 @@
-/* Responsive Media Queries */
+/* Responsividade do Novo Layout SaaS */
 
-/* Tablet & Smaller Screens (< 1024px) */
+/* Telas Médias / Laptops menores (< 1280px) */
+@media (max-width: 1280px) {
+  .main-dashboard-grid {
+    grid-template-columns: 200px 1fr;
+  }
+
+  .sidebar-right {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+}
+
+/* Tablets (< 1024px) */
 @media (max-width: 1024px) {
-  .summary-grid {
+  .main-dashboard-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-4);
+  }
+
+  .sidebar-left {
+    display: none; /* Em tablet/mobile o menu pode recolher para a barra superior ou drawer */
+  }
+
+  .metrics-row {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .analytics-grid {
+  .bottom-analytics-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-right {
     grid-template-columns: 1fr;
   }
 }
 
-/* Mobile Screens (< 768px) */
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-3);
+/* Celulares (< 640px) */
+@media (max-width: 640px) {
+  .top-nav {
+    padding: 0.75rem 1rem;
   }
 
-  .header-actions {
-    justify-content: space-between;
-    flex-wrap: wrap;
+  .brand-tagline {
+    display: none;
   }
 
-  .app-main {
-    padding: var(--space-4);
-    gap: var(--space-6);
-  }
-
-  .summary-grid {
+  .metrics-row {
     grid-template-columns: 1fr;
   }
 
-  .filters-bar {
+  .donut-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .welcome-banner {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
+    gap: var(--space-2);
   }
 
-  .filter-controls {
-    flex-direction: column;
-    align-items: stretch;
+  .date-indicator {
+    align-items: flex-start;
   }
 
-  .filter-select {
-    width: 100%;
-  }
-
-  .type-filter-group {
-    width: 100%;
-    justify-content: stretch;
-  }
-
-  .type-filter-btn {
-    flex: 1;
-    text-align: center;
-  }
-
-  .card-panel {
-    padding: var(--space-4);
-  }
-
-  .chart-wrapper {
-    height: 240px;
-  }
-
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-3);
-  }
-
-  .footer-links {
-    justify-content: center;
-  }
-}
-
-/* Small Mobile (< 480px) */
-@media (max-width: 480px) {
-  .btn {
-    padding: 0.5rem 0.875rem;
-    font-size: 0.8125rem;
-  }
-
-  .metric-value {
-    font-size: 1.375rem;
-  }
-
-  .data-table th, .data-table td {
-    padding: var(--space-3);
+  .date-divider {
+    width: 80px;
   }
 }
