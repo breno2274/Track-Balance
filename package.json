@@ -1,0 +1,19 @@
+{
+  "name": "track-balance",
+  "version": "1.0.0",
+  "description": "Controle financeiro pessoal desenvolvido com Vanilla JavaScript, HTML5 e CSS3",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  },
+  "keywords": [
+    "vanilla-js",
+    "personal-finance",
+    "dashboard",
+    "chartjs",
+    "clean-code",
+    "frontend"
+  ],
+  "author": "Breno dos Santos Santana",
+  "license": "MIT"
+}

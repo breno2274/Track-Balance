@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment & OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Editor artifacts
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj

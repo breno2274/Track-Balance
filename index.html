@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track Balance — Controle financeiro pessoal de alto nível desenvolvido com HTML5, CSS3 e JavaScript puro com arquitetura modular.">
+  <meta name="author" content="Breno dos Santos Santana">
+  <title>Track Balance — Controle Financeiro Pessoal</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos Modulares -->
+  <link rel="stylesheet" href="./src/css/variables.css">
+  <link rel="stylesheet" href="./src/css/reset.css">
+  <link rel="stylesheet" href="./src/css/layout.css">
+  <link rel="stylesheet" href="./src/css/components.css">
+  <link rel="stylesheet" href="./src/css/responsive.css">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header Principal -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h1 class="brand-title">Track Balance</h1>
+              <span class="brand-badge">Vanilla ES6+</span>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 1px;">Gestão Financeira Pessoal</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button id="btn-seed-data" class="btn btn-secondary btn-sm" title="Carregar dados de demonstração para avaliação rápida">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+              <path d="M16 21h5v-5"/>
+            </svg>
+            Demo Data
+          </button>
+          
+          <button id="btn-export-csv" class="btn btn-outline btn-sm" title="Baixar relatório das transações filtradas em formato CSV">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exportar CSV
+          </button>
+
+          <button id="btn-new-transaction" class="btn btn-primary" aria-haspopup="dialog">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Nova Transação
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal do Dashboard -->
+    <main class="app-main">
+      <!-- 1. Grid de Resumo Financeiro (Cards de Métricas) -->
+      <section aria-label="Indicadores Financeiros">
+        <div id="summary-grid" class="summary-grid">
+          <!-- Renderizado via SummaryCards -->
+        </div>
+      </section>
+
+      <!-- 2. Gráficos Analíticos -->
+      <section class="analytics-grid" aria-label="Visualização de Gráficos">
+        <!-- Gráfico 1: Evolução Histórica -->
+        <article class="card-panel">
+          <header class="card-header">
+            <div>
+              <h2 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 3v18h18"/>
+                  <path d="m19 9-5 5-4-4-3 3"/>
+                </svg>
+                Fluxo de Caixa Mensal
+              </h2>
+              <p class="card-subtitle">Evolução comparativa de receitas e despesas</p>
+            </div>
+          </header>
+          <div class="chart-wrapper">
+            <canvas id="evolution-chart"></canvas>
+          </div>
+        </article>
+
+        <!-- Gráfico 2: Despesas por Categoria -->
+        <article class="card-panel">
+          <header class="card-header">
+            <div>
+              <h2 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-expense-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                  <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                </svg>
+                Despesas por Categoria
+              </h2>
+              <p class="card-subtitle">Distribuição dos custos no período selecionado</p>
+            </div>
+          </header>
+          <div class="chart-wrapper">
+            <canvas id="category-chart"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <!-- 3. Seção de Transações e Filtros -->
+      <section class="transactions-section" aria-label="Gerenciamento de Transações">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 style="font-size: 1.25rem; font-weight: 700;">Histórico de Transações</h2>
+            <span id="records-count" class="badge" style="background-color: var(--color-surface-card); border: 1px solid var(--glass-border); color: var(--color-text-secondary);">
+              0 registros
+            </span>
+          </div>
+        </div>
+
+        <!-- Barra de Filtros e Busca -->
+        <div class="filters-bar">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="search"
+              id="search-input"
+              placeholder="Buscar por descrição..."
+              aria-label="Buscar transações por descrição"
+            >
+          </div>
+
+          <div class="filter-controls">
+            <!-- Filtro de Período -->
+            <select id="filter-period" class="filter-select" aria-label="Filtrar por período">
+              <option value="all">Todos os períodos</option>
+            </select>
+
+            <!-- Filtro de Categoria -->
+            <select id="filter-category" class="filter-select" aria-label="Filtrar por categoria">
+              <option value="all">Todas as categorias</option>
+            </select>
+
+            <!-- Filtro de Tipo (Toggle) -->
+            <div id="type-filter-group" class="type-filter-group" role="group" aria-label="Filtrar por tipo de transação">
+              <button type="button" class="type-filter-btn active" data-type="all">Todas</button>
+              <button type="button" class="type-filter-btn" data-type="income">Receitas</button>
+              <button type="button" class="type-filter-btn" data-type="expense">Despesas</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabela de Dados -->
+        <div class="table-container">
+          <table class="data-table" aria-label="Tabela de transações">
+            <thead>
+              <tr>
+                <th scope="col">Descrição / Data</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Valor</th>
+                <th scope="col" style="text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-tbody">
+              <!-- Renderizado dinamicamente via TransactionList -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div>
+          <strong style="color: var(--color-text-main);">Track Balance</strong> — Desenvolvido por <strong>Breno dos Santos Santana</strong>
+          <span style="display: block; font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px;">
+            Análise e Desenvolvimento de Sistemas • Vanilla Front-End Architecture
+          </span>
+        </div>
+        <nav class="footer-links" aria-label="Links de documentação">
+          <a href="docs/requirements.md" target="_blank">Requisitos</a>
+          <a href="docs/architecture.md" target="_blank">Arquitetura</a>
+          <a href="docs/design-system.md" target="_blank">Design System</a>
+          <a href="docs/test-plan.md" target="_blank">Plano de Testes</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal Acessível de Cadastro e Edição -->
+  <div id="transaction-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h2 id="modal-title" style="font-size: 1.15rem; font-weight: 700;">Nova Transação</h2>
+        <button type="button" class="btn-icon" data-action="close-modal" aria-label="Fechar janela modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </header>
+
+      <form id="transaction-form" novalidate>
+        <div class="modal-body">
+          <!-- Tipo: Receita ou Despesa -->
+          <div class="form-group">
+            <span class="form-label">Tipo de Movimentação</span>
+            <div class="type-toggle-container">
+              <label id="label-type-expense" class="type-radio-btn selected-expense" for="type-expense">
+                <input type="radio" id="type-expense" name="type" value="expense" checked style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m19 12-7 7-7-7"/>
+                  <path d="M12 5v14"/>
+                </svg>
+                Despesa
+              </label>
+
+              <label id="label-type-income" class="type-radio-btn" for="type-income">
+                <input type="radio" id="type-income" name="type" value="income" style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m5 12 7-7 7 7"/>
+                  <path d="M12 19V5"/>
+                </svg>
+                Receita
+              </label>
+            </div>
+            <span id="error-type" class="form-error"></span>
+          </div>
+
+          <!-- Descrição -->
+          <div class="form-group">
+            <label class="form-label" for="tx-description">Descrição</label>
+            <input
+              type="text"
+              id="tx-description"
+              name="description"
+              class="form-input"
+              placeholder="Ex: Supermercado, Salário, Internet"
+              required
+            >
+            <span id="error-description" class="form-error"></span>
+          </div>
+
+          <!-- Valor e Data em Linha -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+            <div class="form-group">
+              <label class="form-label" for="tx-amount">Valor (R$)</label>
+              <input
+                type="number"
+                id="tx-amount"
+                name="amount"
+                class="form-input"
+                placeholder="0,00"
+                step="0.01"
+                min="0.01"
+                required
+              >
+              <span id="error-amount" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="tx-date">Data</label>
+              <input
+                type="date"
+                id="tx-date"
+                name="date"
+                class="form-input"
+                required
+              >
+              <span id="error-date" class="form-error"></span>
+            </div>
+          </div>
+
+          <!-- Categoria -->
+          <div class="form-group">
+            <label class="form-label" for="tx-category">Categoria</label>
+            <select id="tx-category" name="category" class="form-select" required>
+              <!-- Preenchido dinamicamente conforme tipo -->
+            </select>
+            <span id="error-category" class="form-error"></span>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-action="close-modal">Cancelar</button>
+          <button type="submit" id="form-submit-btn" class="btn btn-primary">Adicionar Transação</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- Container de Notificações Toast -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Ponto de Entrada da Lógica ES Module -->
+  <script type="module" src="./src/js/app.js"></script>
+</body>
+</html>
